@@ -55,6 +55,7 @@ public class EssentialsChatPlayerListenerLowest extends EssentialsChatPlayer {
         final Team team = player.getScoreboard().getPlayerTeam(player);
 
         String format = ess.getSettings().getChatFormat(group);
+        format = format.replace("%1$s", alignColon(ess, user));
         format = format.replace("{0}", group);
         format = format.replace("{1}", ess.getSettings().getWorldAlias(world));
         format = format.replace("{2}", world.substring(0, 1).toUpperCase(Locale.ENGLISH));
@@ -68,5 +69,15 @@ public class EssentialsChatPlayerListenerLowest extends EssentialsChatPlayer {
         synchronized (format) {
             event.setFormat(format);
         }
+    }
+
+    private CharSequence alignColon(IEssentials ess, User user) {
+        StringBuilder displayName = new StringBuilder();
+        displayName.append(user.getDisplayName());
+        int padding = 16 - displayName.length();
+        for (int i = 0; i < padding; i++) {
+            displayName.append(' ');
+        }
+        return displayName.toString();
     }
 }
