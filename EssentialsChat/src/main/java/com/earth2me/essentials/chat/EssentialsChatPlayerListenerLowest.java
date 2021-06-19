@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scoreboard.Team;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -72,12 +73,66 @@ public class EssentialsChatPlayerListenerLowest extends EssentialsChatPlayer {
     }
 
     private CharSequence alignColon(IEssentials ess, User user) {
-        StringBuilder displayName = new StringBuilder();
-        displayName.append(user.getDisplayName());
-        int padding = 16 - displayName.length();
+        final String str = user.getDisplayName();
+        final int displayLength = getDisplayLength(str);
+        final StringBuilder displayFormat = new StringBuilder();
+        final int padding = 16 - displayLength;
+
         for (int i = 0; i < padding; i++) {
-            displayName.append(' ');
+            displayFormat.append(' ');
         }
-        return displayName.toString();
+        displayFormat.append("%1$s");
+
+        return displayFormat.toString();
+    }
+
+    static final HashSet<Character> formatAndColorCode = new HashSet<Character>() {
+        {
+            add('0');
+            add('1');
+            add('2');
+            add('3');
+            add('4');
+            add('5');
+            add('6');
+            add('7');
+            add('8');
+            add('9');
+            add('a');
+            add('b');
+            add('c');
+            add('d');
+            add('e');
+            add('f');
+            add('l');
+            add('m');
+            add('n');
+            add('o');
+            add('r');
+        }
+    };
+
+    private int getDisplayLength(String msg) {
+        int ret = 0;
+
+        int i = 0;
+        while (i < msg.length()) {
+            if (msg.charAt(i) == '§') {
+                if (i + 1 < msg.length()) {
+                    if (formatAndColorCode.contains(msg.charAt(i + 1))) {
+                        i++;
+                    } else {
+                        ret++;
+                    }
+                } else {
+                    ret++;
+                }
+            } else {
+                ret++;
+            }
+            i++;
+        }
+
+        return ret;
     }
 }
